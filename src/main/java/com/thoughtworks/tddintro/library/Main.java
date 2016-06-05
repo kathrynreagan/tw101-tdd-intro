@@ -16,9 +16,9 @@ public class Main {
 
     private static List<String> books() {
         List<String> books = new ArrayList<>();
-//        books.add("Head First Java");
-//        books.add("Test Driven Development by Example");
-//        books.add("The Agile Samurai");
+        books.add("Head First Java");
+        books.add("Test Driven Development by Example");
+        books.add("The Agile Samurai");
         return books;
     }
 }

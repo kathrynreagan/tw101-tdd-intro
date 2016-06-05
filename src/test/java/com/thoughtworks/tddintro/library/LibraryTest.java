@@ -2,6 +2,8 @@ package com.thoughtworks.tddintro.library;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -11,11 +13,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Matchers.contains;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class LibraryTest {
+
+    List<String> books;
+    PrintStream printStream;
+    DateTimeFormatter dateTimeFormatter;
+    Library library;
+    DateTime time;
+
+
+
+    @Before
+    public void setUp(){
+        books = new ArrayList<>();
+        printStream = mock(PrintStream.class);
+        dateTimeFormatter = mock(DateTimeFormatter.class);
+        time = new DateTime();
+    }
 
 
     /*
@@ -28,28 +44,44 @@ public class LibraryTest {
     @Test
     public void shouldPrintBookTitleWhenThereIsOneBook() {
 
-        List<String> books = new ArrayList<>();
         String title = "Book Title";
         books.add(title);
-        PrintStream printStream = mock(PrintStream.class);
-        DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
-        Library library = new Library(books, printStream, dateTimeFormatter);
+        library = new Library(books, printStream, dateTimeFormatter);
+
 
         library.listBooks();
 
-        // add a verify statement here that shows that the book title was printed by to the printStream
+        verify(printStream).println("Book Title");
     }
 
     @Test
     public void shouldPrintNothingWhenThereAreNoBooks() {
 
-        // implement me
+        library = new Library(books, printStream, dateTimeFormatter);
+
+        library.listBooks();
+
+        // doesn't work -- there are zero interactions with the printStream mock
+        // verify(printStream).println("");
+        // this works, but is it the intention of the Library class??
+        verifyZeroInteractions(printStream);
+
     }
 
     @Test
     public void shouldPrintBothBookTitlesWhenThereAreTwoBooks() throws IOException {
-        // implement me
+        books.add("One Fish, Two Fish, Red Fish, Blue Fish");
+        books.add("Oh, the Places You'll Go!");
+        library = new Library(books, printStream, dateTimeFormatter);
+
+        library.listBooks();
+
+        verify(printStream).println("One Fish, Two Fish, Red Fish, Blue Fish");
+        verify(printStream).println("Oh, the Places You'll Go!");
     }
+
+
+
 
     /*
 
@@ -61,9 +93,7 @@ public class LibraryTest {
     // This one is done for you
     @Test
     public void shouldWelcomeUser() {
-        List<String> books = new ArrayList<>();
-        PrintStream printStream = mock(PrintStream.class);
-        DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
+
         Library library = new Library(books, printStream, dateTimeFormatter);
 
         // We don't need to mock DateTime because it is a value object
@@ -77,24 +107,23 @@ public class LibraryTest {
 
     @Test
     public void shouldDisplayFormattedTimeWhenFormattedTimeIsAnEmptyString() {
-        List<String> books = new ArrayList<>();
-        PrintStream printStream = mock(PrintStream.class);
-        DateTime time = new DateTime();
-        DateTimeFormatter dateTimeFormatter = mock(DateTimeFormatter.class);
-
         when(dateTimeFormatter.print(time)).thenReturn("");
 
         Library library = new Library(books, printStream, dateTimeFormatter);
 
         library.welcome(time);
 
-        // add a verify here
+        verify(printStream).println("Welcome to the library! The current time is ");
     }
 
     @Test
     public void shouldDisplayFormattedTimeWhenFormattedTimeIsNotEmpty() {
+        when(dateTimeFormatter.print(time)).thenReturn("3:36 AM");
 
-        // implement me
-        // then move common test variables into a setup method
+        Library library = new Library(books, printStream, dateTimeFormatter);
+
+        library.welcome(time);
+
+        verify(printStream).println("Welcome to the library! The current time is 3:36 AM");
     }
 }
